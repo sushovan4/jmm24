@@ -1,0 +1,478 @@
+---
+title: "<span class='pref'>Predicting</span>The Onset of the Indian Monsoon"
+title-slide-attributes: 
+  data-background-image: "monsoon.jpg"
+  data-background-opacity: "0.4"
+logo: logo.png
+subtitle: "JMM, Seattle, January 2025"
+author: "<green><b>Sushovan Majhi</b></green><br><i>George Washington University, Washington D.C.</i>"
+fig-cap-location: bottom
+fig-pos: center
+
+format: 
+    revealjs:
+        theme: dark
+        slide-number: true
+        self-contained: true
+        incremental: true
+        css: style.css
+        navigation-mode: vertical
+bibliography: references.bib
+editor: 
+  render-on-save: true
+execute: 
+  echo: false
+---
+
+# Today's Talk {background-image="monsoon.jpg" background-opacity="0.1"}
+
+- Background on the <green>Indian Monsoon</green>
+- <green>Topology</green> of a time series
+- Takens's Embedding Theorem
+- <green>Sliding Window</green>
+- Predicting the <green>onset</green> and <red>withdrawal</red>
+- Future work
+
+# The Indian <green>Monsoon</green> {background-image="monsoon.jpg" background-opacity="0.3"}
+
+## Rain in India {.smaller}
+
+:::{.columns}
+
+:::{.column}
+- The climate of India predominately depends on rainfall
+- Average: <green>$899$</green> mm with variation <red>$\pm 20\%$</red>
+- <green>Monsoon</green> is the typical rainy season
+  - <green>Onset</green>: May-July
+  - <red>Withdrawal</red>: Sep-Oct
+- What is the Monsoon?
+:::
+
+:::{.column}
+![Average rainfall across India](rain.png)
+:::
+
+:::
+
+## The Monsoon System {.smaller}
+:::{.callout-tip appearance="minimal"}
+## <green>Definition</green> according to the *Indian Meteorological Department (IMD)*
+The seasonal <red>reversal</red> of the direction of winds along the shores of the Indian Ocean, especially in the Arabian Sea, which blow from the southwest for half of the year and from the northeast for the other half.
+:::
+
+:::{.columns}
+
+:::{.column}
+
+- Only partly understood 
+- The most anticipated weather phenomenon
+- The biggest financial bet
+- Notoriously difficult to predict
+- Affecting the Indian flora and fauna, economy, and agriculture
+
+:::
+
+:::{.column}
+![](Indian-Ocean.jpg)
+
+:::
+
+:::
+
+## {background-image="./monsoon-ezgif.com-speed.gif"}
+
+## Monsoon is Coming! {.smaller}
+
+:::{.columns}
+
+:::{.column}
+
+![<green>Onset</green>: May--July](summer-monsoon.webp)
+
+:::
+
+:::{.column}
+
+![<red>Withdrawal</red>: Sep--Oct](summer-monsoon-w.jpg)
+
+:::
+
+- The main objective of the project is develop an early warning system using topological data analysis (TDA).
+:::
+
+
+# <green>Climate Science</green> & <red>TDA</red>  {background-image="drawing.png" background-opacity="0.3"}
+
+## Nuisances of Climate Data
+- high *dimensionality*
+- *complexity* of realistic models
+- presence of *noise*
+- *missing* values
+
+## Successful Applications of TDA
+
+- European Topsoil 
+  - @savic_topological_2017
+- Wildfire
+  - @kim_deciphering_2019
+- Atmospheric River Patters
+  - @muszynski_topological_2019
+- Weather Regimes
+  - @strommen_topological_2023
+
+
+# <green>Topology</green> of a <green>Time-series</green>
+
+## Lorenz System {.smaller}
+
+::: {.columns}
+
+::: {.column width="40%"}
+
+:::{.callout-tip}
+## $\sigma = 10$, $\rho = 28$, $\beta = 8 / 3$
+$$
+\begin{aligned}
+\dot{x} &= \sigma(y-x)\\
+\dot{y} &= x(\rho-z)-y\\
+\dot{z} &= xy-\beta z
+\end{aligned}
+$$
+:::
+
+- What is Chaos? 
+  
+Note that:
+
+- The topological changes are still detectable even when projected onto the two-dimensional plane.
+
+- How much of it can be suggestive by a single signal, e.g. $x$?
+:::
+
+
+::: {.column width="60%"}
+
+```{ojs}
+Plot.plot({
+  grid: true,
+  height: 1000,
+  width: width,
+  x: { domain: [-20, 20] },
+  y: { domain: [-23, 30] },
+  marks: [
+    Plot.line(lorenzData.slice(0, n), {
+      x: "x",
+      y: "y",
+      strokeWidth: 2,
+      stroke: "red"
+    }),
+    Plot.ruleX([-20]),
+    Plot.ruleY([-23])
+  ]
+});
+mutable play = false;
+viewof playPause = Inputs.button(" ⏯️", {
+  value: false,
+  reduce: () => { mutable play = !play; } 
+});
+```
+
+:::
+
+:::
+
+## Time-Delay Coordinates {.smaller}
+Let's now consider only one signal: $x$!
+```{ojs}
+Plot.plot({
+  height: 200,
+  width: width,
+  x: {label: "t →"},
+  marks: [
+    Plot.line(lorenzData.slice(500,600), {
+      x: "n",
+      y: "x"
+    }),
+    Plot.ruleX([w, w+delay], { stroke: "red" }),
+    Plot.text([[w, -5], [w+delay+0.6, -5]], {text: [`d1`, `d2`]}),
+    Plot.ruleX([500]),   
+    Plot.ruleY([-12]),   
+  ]
+});
+```
+
+```{ojs}
+viewof w = Inputs.range([500, 600-delay-1], { value: 510, step: 1 });
+```
+
+. . . 
+
+The topology of the time-series is shown below:
+```{ojs}
+Plot.plot({
+  width: width,
+  height: 400,
+  x: {label: 'd1'},
+  y: {label: 'd2'},
+  marks: [
+    Plot.ruleX([22.5]),
+    Plot.ruleY([22]),
+    Plot.dot(
+      delayTS(
+        lorenzData.slice(500,600).map((d) => d.z),
+        delay
+      ),
+      {
+        stroke: "white",
+        r: (d, id) => id == w-500 ? 20 : 6,
+        fill: (d, id) => id == w-500 ? "red" : "none"
+      }
+    )
+  ]
+});
+viewof delay = Inputs.range([1, 50], { value: 1, label: `Delay`, step: 1 });
+```
+
+
+## Telling Apart Chaos {.smaller}
+We still consider only one signal: $x$
+```{ojs}
+Plot.plot({
+  height: 300,
+  width: width,
+  marks: [
+    Plot.ruleX([500]),
+    Plot.ruleY([0]),
+    Plot.line(lorenzData.slice(500), {
+      x: "n",
+      y: "x",
+      stroke: (d) => d.n <= 1300 ? "green" : "red"
+    })
+  ]
+});
+```
+
+. . . 
+
+Below are the time-delay embeddings:
+
+:::{.columns}
+
+:::{.column}
+```{ojs}
+Plot.plot({
+  width: width,
+  height: 1500,
+  marks: [
+    Plot.ruleX([-14]),
+    Plot.ruleY([-14]),
+    Plot.dot(
+      delayTS(
+        lorenzData.map((d) => d.x),
+        delay1
+      ).slice(500, 1300),
+      {
+        stroke: "green",
+        r: 3
+      }
+    )
+  ]
+});
+```
+:::
+
+:::{.column}
+```{ojs}
+Plot.plot({
+  width: width,
+  height: 1500,
+  marks: [
+    Plot.ruleX([-18]),
+    Plot.ruleY([-18]),
+    Plot.dot(
+      delayTS(
+        lorenzData.map((d) => d.x),
+        delay1
+      ).slice(1300),
+      {
+        stroke: "red",
+        r: 3
+      }
+    )
+  ]
+});
+```
+:::
+
+:::
+
+```{ojs}
+viewof delay1 = Inputs.range([1, 50], { value: 1, label: tex`Delay`, step: 1 });
+```
+
+## Capturing Transition using Persistence {.smaller}
+Use overlapping windows by Sliding window
+
+1. take the input signal
+
+2. set a window size and delay
+
+3. position the window at the beginning of the time-series, and do the following:
+    - construct a point-cloud using time-delay embedding
+
+    - compute persistence diagram
+
+    - additionally, compute  summaries like persistence landscapes, $L^p$ norms
+
+4. slide the window one-step forward, and repeat 3 until the end of the time-series is reached. 
+
+5. In our case, we accumulate the computed norms to output a time-series.
+
+# Predicting the <green>Monsoon</green>
+
+## The Monsoon Index 
+
+```{ojs}
+Plot.plot({
+  width: width,
+  height: 500,
+  marks: [
+    Plot.line(
+      data,
+      {
+        x: "Date",
+        y: "rain",
+      }
+    )
+  ]
+});
+data = FileAttachment("idx_1972.csv").csv({typed: true});
+norms = FileAttachment("idx_1972_norms.csv").csv({typed: true});
+```
+
+. . . 
+
+Q: Can you guess the official onset?
+
+. . . 
+
+
+A: June 18 was the official date.
+
+## Inference using Sliding Window {.smaller}
+
+Sliding Window: Window size $30$, Delay $7$
+
+```{ojs}
+Plot.plot({
+  width: width,
+  height: 200,
+  marks: [
+    Plot.dot(
+      data,
+      {
+        x: "Date",
+        y: "rain",
+        stroke: (d, index) => index >= w1 && index <= w1 + w_size ? "red" : "white"
+      }
+    )
+  ]
+});
+
+```
+
+```{ojs}
+w_size = 30
+viewof w1 = Inputs.range([0, data.length-w_size-1], { value: 0, step: 1 });
+```
+
+```{ojs}
+Plot.plot({
+  width: width,
+  height: 400,
+  x: {label: 'z1'},
+  y: {label: 'z2'},
+  marks: [
+    Plot.dot(
+      delayTS(
+        data.map((d) => d.rain),
+        delay3
+      ).slice(w1, w1 + w_size),
+      {
+        stroke: "red",
+        r: 4,
+      }
+    )
+  ]
+});
+viewof delay3 = Inputs.range([1, 20], { value: 1, label: tex`Delay`, step: 1 });
+```
+
+## Onset and Withdrawal {.smaller}
+
+```{ojs}
+Plot.plot({
+  width: width,
+  height: 500,
+  marks: [
+    dualAxisY(data, {y: "rain", anchor: "left", color: "white"}),
+    dualAxisY(norms, {y: "norm", anchor: "right", color: "red"}),
+    Plot.lineY(
+      data,
+      Plot.normalizeY("extent", {x: "Date", y: "rain", stroke: "white"})
+    ),
+    Plot.lineY(
+      norms,
+      Plot.normalizeY("extent", {x: "Date", y: "norm", stroke: "red"})
+    )
+  ]
+});
+
+```
+
+
+# Future Directions
+
+# References
+
+```{ojs}
+delayTS = function (ts, delay = 1, dim = 2) {
+  return ts.map((d, i) => {
+    const out = [];
+    for (let j = 0; j < dim; j++) out.push(ts[i + j * delay]);
+    return out;
+  });
+};
+lorenz = function (
+  [x, y, z] = [0, 0, 0],
+  n = 100,
+  { sigma = 10, r = 28, b = 8 / 3 } = {}
+) {
+  let F = function (t, [x, y, z]) {
+    return [sigma * (y - x), r * x - x * z - y, x * y - b * z];
+  };
+
+  let s = new odex.Solver(3);
+  let flow = [];
+
+  for (let i = 0; i < n; i++) {
+    [x, y, z] = s.solve(F, 0, [x, y, z], 0.01).y;
+    flow.push({ n: i, x: x, y: y, z: z });
+  }
+  return flow;
+};
+lorenzData = lorenz([1, 1, 1], 4000);
+odex = import("https://cdn.skypack.dev/odex@v2.0.4");
+mutable n = 0;
+{
+  let i = 0;
+  while (play && i < 4000) {
+    yield Promises.delay(3, mutable n++);
+  }
+};
+function dualAxisY(data, {y, ticks = 10, tickFormat, ...options} = {}) {
+  const [y1, y2] = d3.extent(Plot.valueof(data, y));
+  const scale = d3.scaleLinear().domain([y1, y2]);
+  return Plot.axisY(d3.ticks(y1, y2, ticks), {...options, y: scale, tickFormat: scale.tickFormat(ticks, tickFormat)});
+}
+```
