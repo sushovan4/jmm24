@@ -322,8 +322,8 @@ Plot.plot({
 viewof delay1 = Inputs.range([1, 50], { value: 1, label: tex`\text{Delay }(\tau)=`, step: 1 });
 ```
 
-## Capturing Transition using Persistence {.smaller}
-Use overlapping windows by Sliding window
+## TDA Pipeline {.smaller}
+We use overlapping windows to detect transition to chaos.
 
 1. take the input signal
 
