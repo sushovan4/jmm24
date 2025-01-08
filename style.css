@@ -47,11 +47,16 @@ input[type="range"] {
    width: 100%!important;
 }
 input[type="number"] {
-    display: none;
-    width: 20%!important;
+    font-family: monospace!important;
+    font-size: 0.5em!important;
+    width: 5%!important;
+    overflow: hidden;
 } 
 form {
     width: 100%!important;
+}
+form label {
+    width: 15%!important;
 }
 .theorem {
     font-style: italic;
@@ -64,8 +69,4 @@ form {
 
 .theorem .theorem-title {
     font-style: normal;
-}
-
-.chart svg { 
-    font-size: 1.1em !important;
 }

@@ -8,7 +8,7 @@ subtitle: "JMM, Seattle, January 2025"
 author: "<green><b>Sushovan Majhi</b></green><br><i>George Washington University, Washington D.C.</i>"
 fig-cap-location: bottom
 fig-pos: center
-
+html-math-method: katex
 format: 
     revealjs:
         theme: dark
@@ -123,14 +123,15 @@ The seasonal <red>reversal</red> of the direction of winds along the shores of t
 
 # <green>Topology</green> of a <green>Time-series</green>
 
-## Lorenz System {.smaller}
+## Chaos {.smaller}
+A *chaotic system* is deterministic but sensitive to initial conditions and manifest unpredictable patterns.
 
 ::: {.columns}
 
 ::: {.column width="40%"}
 
-:::{.callout-tip}
-## $\sigma = 10$, $\rho = 28$, $\beta = 8 / 3$
+:::{.callout-tip appearance="minimal"}
+## <green>Lorenz System</green> 
 $$
 \begin{aligned}
 \dot{x} &= \sigma(y-x)\\
@@ -138,15 +139,12 @@ $$
 \dot{z} &= xy-\beta z
 \end{aligned}
 $$
+Parameters: $\sigma = 10$, $\rho = 28$, $\beta = 8 / 3$.
 :::
 
-- What is Chaos? 
-  
-Note that:
+- Chaos is still discernible when <green>projected</green> on the $xy$-plane.
 
-- The topological changes are still detectable even when projected onto the two-dimensional plane.
-
-- How much of it can be suggestive by a single signal, e.g. $x$?
+- How much of it still detectable using only a <green>single signal</green>, e.g. <green>$x$</green>?
 :::
 
 
@@ -154,11 +152,13 @@ Note that:
 
 ```{ojs}
 Plot.plot({
-  grid: true,
-  height: 1000,
+  style: { fontFamily: 'monospace', fontSize: 18 },
+  marginTop: 50,
+  marginBottom: 50,
+  height: 2000,
   width: width,
-  x: { domain: [-20, 20] },
-  y: { domain: [-23, 30] },
+  x: { domain: [-20, 20], ticks: 15 },
+  y: { domain: [-23, 30], ticks: 15 },
   marks: [
     Plot.line(lorenzData.slice(0, n), {
       x: "x",
@@ -173,7 +173,7 @@ Plot.plot({
 mutable play = false;
 viewof playPause = Inputs.button(" ⏯️", {
   value: false,
-  reduce: () => { mutable play = !play; } 
+  reduce: () => { if(mutable n >= 3999) mutable n = 0; mutable play = !play; } 
 });
 ```
 
@@ -181,20 +181,22 @@ viewof playPause = Inputs.button(" ⏯️", {
 
 :::
 
-## Time-Delay Coordinates {.smaller}
-Let's now consider only one signal: $x$!
+## Time-Delay Embedding {.smaller}
+Let's now consider only one signal: <green>$x$</green>
 ```{ojs}
 Plot.plot({
-  height: 200,
+  style: { fontFamily: 'monospace', fontSize: 18 },
+  height: 250,
   width: width,
   x: {label: "t →"},
+  y: { ticks: 4 },
   marks: [
     Plot.line(lorenzData.slice(500,600), {
       x: "n",
       y: "x"
     }),
     Plot.ruleX([w, w+delay], { stroke: "red" }),
-    Plot.text([[w, -5], [w+delay+0.6, -5]], {text: [`d1`, `d2`]}),
+    Plot.text([[w+0.2, -5], [w+delay+0.6, -5]], {text: [`d₁`, `d₂`]}),
     Plot.ruleX([500]),   
     Plot.ruleY([-12]),   
   ]
@@ -210,10 +212,11 @@ viewof w = Inputs.range([500, 600-delay-1], { value: 510, step: 1 });
 The topology of the time-series is shown below:
 ```{ojs}
 Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 18 },
   width: width,
-  height: 400,
-  x: {label: 'd1'},
-  y: {label: 'd2'},
+  height: 650,
+  x: {label: 'd₁', ticks: 15 },
+  y: {label: 'd₂', ticks: 10 },
   marks: [
     Plot.ruleX([22.5]),
     Plot.ruleY([22]),
@@ -224,13 +227,13 @@ Plot.plot({
       ),
       {
         stroke: "white",
-        r: (d, id) => id == w-500 ? 20 : 6,
+        r: (d, id) => id == w-500 ? 100 : 20,
         fill: (d, id) => id == w-500 ? "red" : "none"
       }
     )
   ]
 });
-viewof delay = Inputs.range([1, 50], { value: 1, label: `Delay`, step: 1 });
+viewof delay = Inputs.range([1, 50], { value: 1, label: tex`\text{Delay }(\tau)=`, step: 1 });
 ```
 
 
@@ -307,7 +310,7 @@ Plot.plot({
 :::
 
 ```{ojs}
-viewof delay1 = Inputs.range([1, 50], { value: 1, label: tex`Delay`, step: 1 });
+viewof delay1 = Inputs.range([1, 50], { value: 1, label: `Delay:`, step: 1 });
 ```
 
 ## Capturing Transition using Persistence {.smaller}
