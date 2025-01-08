@@ -237,15 +237,18 @@ viewof delay = Inputs.range([1, 50], { value: 1, label: tex`\text{Delay }(\tau)=
 ```
 
 
-## Telling Apart Chaos {.smaller}
-We still consider only one signal: $x$
+## Sliding Window {.smaller}
+We still consider only one signal: <green>$x$</green>
 ```{ojs}
 Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 18 },
   height: 300,
   width: width,
+  x: { ticks: 25, label: 't →' },
+  y: {ticks: 7 },
   marks: [
-    Plot.ruleX([500]),
-    Plot.ruleY([0]),
+    Plot.ruleX([500, 1300]),
+    Plot.ruleY([-20]),
     Plot.line(lorenzData.slice(500), {
       x: "n",
       y: "x",
@@ -257,18 +260,21 @@ Plot.plot({
 
 . . . 
 
-Below are the time-delay embeddings:
+Below are the time-delay embeddings of the above windows:
 
 :::{.columns}
 
 :::{.column}
 ```{ojs}
 Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 22 },
   width: width,
   height: 1500,
+  x: { ticks: 15, label: 'd₁'},
+  y: { ticks: 15, label: 'd₂'},
   marks: [
-    Plot.ruleX([-14]),
-    Plot.ruleY([-14]),
+    Plot.ruleX([-15]),
+    Plot.ruleY([-15]),
     Plot.dot(
       delayTS(
         lorenzData.map((d) => d.x),
@@ -276,7 +282,7 @@ Plot.plot({
       ).slice(500, 1300),
       {
         stroke: "green",
-        r: 3
+        r: 8
       }
     )
   ]
@@ -287,8 +293,11 @@ Plot.plot({
 :::{.column}
 ```{ojs}
 Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 22 },
   width: width,
   height: 1500,
+  x: { ticks: 15, label: 'd₁' },
+  y: { ticks: 15, label: 'd₂'},
   marks: [
     Plot.ruleX([-18]),
     Plot.ruleY([-18]),
@@ -299,7 +308,7 @@ Plot.plot({
       ).slice(1300),
       {
         stroke: "red",
-        r: 3
+        r: 8
       }
     )
   ]
@@ -310,7 +319,7 @@ Plot.plot({
 :::
 
 ```{ojs}
-viewof delay1 = Inputs.range([1, 50], { value: 1, label: `Delay:`, step: 1 });
+viewof delay1 = Inputs.range([1, 50], { value: 1, label: tex`\text{Delay }(\tau)=`, step: 1 });
 ```
 
 ## Capturing Transition using Persistence {.smaller}
