@@ -490,6 +490,11 @@ Plot.plot({
 });
 ```
 
+## Transition to Chaos {.smaller}
+
+![Comparing $2$-dimensional persistence diagrams](dmg.png)
+
+
 # Future <green>Directions</green>
 
 
