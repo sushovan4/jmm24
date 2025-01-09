@@ -5,10 +5,9 @@ title-slide-attributes:
   data-background-opacity: "0.3"
 logo: logo.png
 subtitle: "Joint Math Meetings, Seattle, 2025"
-author: "<green><b>Sushovan Majhi</b></green><br><i>Assistant Professor, Data Science</i><br><green>George Washington University, Washington D.C., USA</green>"
+author: "<green><b>Sushovan Majhi</b></green><br><br>George Washington University, Washington D.C., USA"
 fig-cap-location: bottom
 fig-pos: center
-html-math-method: katex
 format: 
     revealjs:
         theme: dark
@@ -27,10 +26,9 @@ execute:
 # Today's Talk {background-image="monsoon.jpg" background-opacity="0.1"}
 
 - Background on the <green>Indian Monsoon</green>
-- <green>Topology</green> of a time series
-- Takens's Embedding Theorem
-- <green>Sliding Window</green>
-- Predicting the <green>onset</green> and <red>withdrawal</red>
+- <green>Planet earth</green> and TDA
+- <green>Topology</green> of a time-series
+- Predicting the <green>onset</green> and <red>withdrawal</red> of monsoon
 - Future work
 
 # The Indian <green>Monsoon</green> {background-image="monsoon.jpg" background-opacity="0.3"}
@@ -40,7 +38,7 @@ execute:
 :::{.columns}
 
 :::{.column}
-- The climate of India predominately depends on rainfall
+- The climate of India predominately depends on <green>rainfall</green>
 - Average: <green>$899$</green> mm with variation <red>$\pm 20\%$</red>
 - <green>Monsoon</green> is the typical rainy season
   - <green>Onset</green>: May-July
@@ -67,8 +65,8 @@ The seasonal <red>reversal</red> of the direction of winds along the shores of t
 - Only partly understood 
 - The most anticipated weather phenomenon
 - The biggest financial bet
-- Notoriously difficult to predict
-- Affecting the Indian flora and fauna, economy, and agriculture
+   - Affecting the Indian flora and fauna, economy, and agriculture
+- Notoriously <red>difficult</red> to predict
 
 :::
 
@@ -97,7 +95,7 @@ The seasonal <red>reversal</red> of the direction of winds along the shores of t
 
 :::
 
-- The main objective of the project is develop an early warning system using topological data analysis (TDA).
+- The main objective of the project is develop an <green>early warning system</green> using topological data analysis (TDA).
 :::
 
 
@@ -124,7 +122,7 @@ The seasonal <red>reversal</red> of the direction of winds along the shores of t
 # <green>Topology</green> of a <green>Time-series</green> {background-image="drawing.png" background-opacity="0.3"}
 
 ## Chaos {.smaller}
-A *chaotic system* is deterministic but sensitive to initial conditions and manifest unpredictable patterns.
+A *chaotic system* is deterministic but sensitive to initial conditions and manifests unpredictable patterns.
 
 ::: {.columns}
 
@@ -155,7 +153,7 @@ Plot.plot({
   style: { fontFamily: 'monospace', fontSize: 18 },
   marginTop: 50,
   marginBottom: 50,
-  height: 2000,
+  height: 1000,
   width: width,
   x: { domain: [-20, 20], ticks: 15 },
   y: { domain: [-23, 30], ticks: 15 },
@@ -214,7 +212,7 @@ The topology of the time-series is shown below:
 Plot.plot({
   style: { fontFamily: 'monospace', fontSize: 18 },
   width: width,
-  height: 650,
+  height: 420,
   x: {label: 'd₁', ticks: 15 },
   y: {label: 'd₂', ticks: 10 },
   marks: [
@@ -244,7 +242,7 @@ Plot.plot({
   style: { fontFamily: 'monospace', fontSize: 18 },
   height: 300,
   width: width,
-  x: { ticks: 25, label: 't →' },
+  x: { ticks: 20, label: 't →' },
   y: {ticks: 7 },
   marks: [
     Plot.ruleX([500, 1300]),
@@ -269,7 +267,7 @@ Below are the time-delay embeddings of the above windows:
 Plot.plot({
   style: { fontFamily: 'monospace', fontSize: 22 },
   width: width,
-  height: 1500,
+  height: 800,
   x: { ticks: 15, label: 'd₁'},
   y: { ticks: 15, label: 'd₂'},
   marks: [
@@ -295,7 +293,7 @@ Plot.plot({
 Plot.plot({
   style: { fontFamily: 'monospace', fontSize: 22 },
   width: width,
-  height: 1500,
+  height: 800,
   x: { ticks: 15, label: 'd₁' },
   y: { ticks: 15, label: 'd₂'},
   marks: [
@@ -323,32 +321,33 @@ viewof delay1 = Inputs.range([1, 50], { value: 1, label: tex`\text{Delay }(\tau)
 ```
 
 ## TDA Pipeline {.smaller}
-We use overlapping windows to detect transition to chaos.
+We use <green>overlapping windows</green> to detect topological changes, e.g. <red>transition to chaos</red>.
 
-1. take the input signal
+1. take the input signal (time-series)
 
-2. set a window size and delay
+2. set a <green>window size</green> $w$, <green>delay</green> $\tau$, and <green>delay coordinates</green> $k$
 
 3. position the window at the beginning of the time-series, and do the following:
-    - construct a point-cloud using time-delay embedding
+    - construct a <green>point-cloud</green> using time-delay embedding
 
-    - compute persistence diagram
+    - compute the <green>persistence diagram</green> (PD) of the point-cloud
 
-    - additionally, compute  summaries like persistence landscapes, $L^p$ norms
+    - additionally, compute topological summaries like persistence landscapes, <green>$L^p$-norms</green>, etc
 
-4. slide the window one-step forward, and repeat 3 until the end of the time-series is reached. 
+4. slide the window <green>one-step</green> forward, and repeat <green>STEP 3</green> until the end of the time-series is reached. 
 
-5. In our case, we accumulate the computed norms to output a time-series.
+5. In our case, we accumulate the landscape <green>$2$-norms</green> to output another time-series.
 
 # Predicting the <green>Monsoon</green> {background-image="monsoon.jpg" background-opacity="0.3"}
 
 ## The Monsoon Index {.smaller}
+The daily <green>average</green> difference of rainfall across $7$ different weather stations across India.
 
 ```{ojs}
 Plot.plot({
   style: { fontFamily: 'monospace', fontSize: 18 },
   width: width,
-  height: 500,
+  height: 600,
   marginBottom: 50,
   y: { ticks: 10 },
   marks: [
@@ -370,11 +369,11 @@ norms = FileAttachment("idx_1972_norms.csv").csv({typed: true});
 - <red>Q</red>: Can you guess the official <green>onset</green> from the signal?
 
 
-- <green>A</green>: June 18 was the official date.
+- <green>A</green>: *June 18* was the official date.
 
-## Inference using Sliding Window {.smaller}
+## Inference using the Sliding Window {.smaller}
 
-Window size $=30$ and embedding dimension $=2$.
+Window size $w=30$ and embedding dimension $k=2$.
 
 ```{ojs}
 Plot.plot({
@@ -405,7 +404,7 @@ viewof w1 = Inputs.range([0, data.length-w_size-1], { value: 0, step: 1 });
 Plot.plot({
   style: { fontFamily: 'monospace', fontSize: 10 },
   width: width,
-  height: 400,
+  height: 500,
   x: { domain: [-14,21], label: 'd₁'},
   y: { domain: [-14,21], label: 'd₂'},
   marks: [
@@ -514,7 +513,10 @@ to minimize false-negatives and false-positives
 
 # References
 
+# Appendix
+
 ```{ojs}
+//| echo: false
 delayTS = function (ts, delay = 1, dim = 2) {
   return ts.map((d, i) => {
     const out = [];
