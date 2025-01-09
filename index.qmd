@@ -2,10 +2,10 @@
 title: "<span class='pref'>Predicting</span>The Onset of the Indian Monsoon"
 title-slide-attributes: 
   data-background-image: "monsoon.jpg"
-  data-background-opacity: "0.4"
+  data-background-opacity: "0.3"
 logo: logo.png
-subtitle: "JMM, Seattle, January 2025"
-author: "<green><b>Sushovan Majhi</b></green><br><i>George Washington University, Washington D.C.</i>"
+subtitle: "Joint Math Meetings, Seattle, 2025"
+author: "<green><b>Sushovan Majhi</b></green><br><i>Assistant Professor, Data Science</i><br><green>George Washington University, Washington D.C., USA</green>"
 fig-cap-location: bottom
 fig-pos: center
 html-math-method: katex
