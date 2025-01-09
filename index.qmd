@@ -121,7 +121,7 @@ The seasonal <red>reversal</red> of the direction of winds along the shores of t
   - @strommen_topological_2023
 
 
-# <green>Topology</green> of a <green>Time-series</green>
+# <green>Topology</green> of a <green>Time-series</green> {background-image="drawing.png" background-opacity="0.3"}
 
 ## Chaos {.smaller}
 A *chaotic system* is deterministic but sensitive to initial conditions and manifest unpredictable patterns.
@@ -340,15 +340,19 @@ We use overlapping windows to detect transition to chaos.
 
 5. In our case, we accumulate the computed norms to output a time-series.
 
-# Predicting the <green>Monsoon</green>
+# Predicting the <green>Monsoon</green> {background-image="monsoon.jpg" background-opacity="0.3"}
 
-## The Monsoon Index 
+## The Monsoon Index {.smaller}
 
 ```{ojs}
 Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 18 },
   width: width,
   height: 500,
+  marginBottom: 50,
+  y: { ticks: 10 },
   marks: [
+    Plot.ruleY([-14]),
     Plot.line(
       data,
       {
@@ -362,24 +366,23 @@ data = FileAttachment("idx_1972.csv").csv({typed: true});
 norms = FileAttachment("idx_1972_norms.csv").csv({typed: true});
 ```
 
-. . . 
 
-Q: Can you guess the official onset?
-
-. . . 
+- <red>Q</red>: Can you guess the official <green>onset</green> from the signal?
 
 
-A: June 18 was the official date.
+- <green>A</green>: June 18 was the official date.
 
 ## Inference using Sliding Window {.smaller}
 
-Sliding Window: Window size $30$, Delay $7$
+Window size $=30$ and embedding dimension $=2$.
 
 ```{ojs}
 Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 12 },
   width: width,
   height: 200,
   marks: [
+    Plot.ruleY([-14]),
     Plot.dot(
       data,
       {
@@ -400,16 +403,19 @@ viewof w1 = Inputs.range([0, data.length-w_size-1], { value: 0, step: 1 });
 
 ```{ojs}
 Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 10 },
   width: width,
   height: 400,
-  x: {label: 'z1'},
-  y: {label: 'z2'},
+  x: { domain: [-14,21], label: 'd₁'},
+  y: { domain: [-14,21], label: 'd₂'},
   marks: [
+    Plot.ruleX([-14]),
+    Plot.ruleY([-14]),
     Plot.dot(
       delayTS(
-        data.map((d) => d.rain),
+        data.slice(w1, w1 + w_size).map((d) => d.rain),
         delay3
-      ).slice(w1, w1 + w_size),
+      ),
       {
         stroke: "red",
         r: 4,
@@ -420,13 +426,22 @@ Plot.plot({
 viewof delay3 = Inputs.range([1, 20], { value: 1, label: tex`Delay`, step: 1 });
 ```
 
-## Onset and Withdrawal {.smaller}
+## Persistence Pipeline {.smaller}
+- Go to embedding dimension: <green>$7$</green>
+- Window size: <green>$30$</green> (delay: $\tau=1$)
 
+. . . 
+
+The time-series of <green>$L^2$ norms</green> of <green>persistence landscapes</green>:
 ```{ojs}
 Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 13 },
   width: width,
   height: 500,
   marks: [
+    Plot.ruleX([Date.parse('1972-01-01')]),
+    Plot.ruleX([Date.parse('1972-12-31')], { stroke: 'red' }),
+    Plot.ruleY([0]),
     dualAxisY(data, {y: "rain", anchor: "left", color: "white"}),
     dualAxisY(norms, {y: "norm", anchor: "right", color: "red"}),
     Plot.lineY(
@@ -439,11 +454,47 @@ Plot.plot({
     )
   ]
 });
-
 ```
 
+## Onset and Withdrawal of Monsoon {.smaller} 
+- Onset: first occurrence of norm larger than $\mu+c_1*\sigma$
+- Withdrawal: last occurrence of norm larger than $\mu+c_2*\sigma$
 
-# Future Directions
+. . . 
+
+$c_1=2$, $c_2=1$:
+
+```{ojs}
+Plot.plot({
+  style: { fontFamily: 'monospace', fontSize: 13 },
+  width: width,
+  height: 500,
+  marks: [
+    Plot.text([[Date.parse('1972-06-15'), 1], [Date.parse('1972-09-26'), 1]], { text: ['June 15', 'Oct 26'] }),
+    Plot.ruleY([0]),
+    Plot.ruleX([Date.parse('1972-01-01')]),
+    Plot.ruleX([Date.parse('1972-12-31')], { stroke: 'red'}),
+    Plot.ruleX([Date.parse('1972-06-15')], { stroke: 'green', strokeWidth: 3 }),
+    Plot.ruleX([Date.parse('1972-09-26')], { stroke: 'green', strokeWidth: 3}),
+    dualAxisY(data, {y: "rain", anchor: "left", color: "white"}),
+    dualAxisY(norms, {y: "norm", anchor: "right", color: "red"}),
+    Plot.lineY(
+      data,
+      Plot.normalizeY("extent", {x: "Date", y: "rain", stroke: "white"})
+    ),
+    Plot.lineY(
+      norms,
+      Plot.normalizeY("extent", {x: "Date", y: "norm", stroke: "red"})
+    )
+  ]
+});
+```
+
+# Future <green>Directions</green>
+
+
+
+# <red>Questions</red>?
 
 # References
 
