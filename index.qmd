@@ -495,11 +495,22 @@ Plot.plot({
 ![Comparing $2$-dimensional persistence diagrams](dmg.png)
 
 
-# Future <green>Directions</green>
+# Future <green>Directions</green> {.smaller}
 
+- For a working early-warning system, we need a better resolution of the transition period 
+  
+- Enhance interpretability
 
+- Instead of relying on delay coordinates, use more than just one singal
+  
+- Fine-tune the parameters (e.g. window size, embedding dimension, delay)
+to minimize false-negatives and false-positives
 
-# <red>Questions</red>?
+- PCA to project the high-dimensional reconstruction of the phase space to gain insights into the attractors
+
+- Extend the study to other tropical monsoon systems.
+
+# Any <red>Questions</red>? {.smaller}
 
 # References
 
