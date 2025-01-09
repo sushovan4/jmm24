@@ -426,8 +426,8 @@ viewof delay3 = Inputs.range([1, 20], { value: 1, label: tex`Delay`, step: 1 });
 ```
 
 ## Persistence Pipeline {.smaller}
-- Go to embedding dimension: <green>$7$</green>
-- Window size: <green>$30$</green> (delay: $\tau=1$)
+- Go to embedding dimension: <green>$k=7$</green>
+- Window size: <green>$w=30$</green> (delay: $\tau=1$)
 
 . . . 
 
@@ -455,7 +455,7 @@ Plot.plot({
 });
 ```
 
-## Onset and Withdrawal of Monsoon {.smaller} 
+## The Onset and Withdrawal of Monsoon {.smaller} 
 - Onset: first occurrence of norm larger than $\mu+c_1*\sigma$
 - Withdrawal: last occurrence of norm larger than $\mu+c_2*\sigma$
 
@@ -496,27 +496,28 @@ Plot.plot({
 
 # Future <green>Directions</green> {.smaller}
 
-- For a working early-warning system, we need a better resolution of the transition period 
+- For a working early-warning system, we need a better resolution around 
+  the <green>transition period</green>
   
-- Enhance interpretability
+- Enhance <green>interpretability</green>
 
-- Instead of relying on delay coordinates, use more than just one singal
-  
-- Fine-tune the parameters (e.g. window size, embedding dimension, delay)
+- Tune the parameters (e.g. window size $w$, embedding dimension $k$, delay $k$)
 to minimize false-negatives and false-positives
 
-- PCA to project the high-dimensional reconstruction of the phase space to gain insights into the attractors
+- Instead of relying on time-delay embedding, use <green>more signals</green>
+  
+- <green>PCA</green> to project the high-dimensional reconstruction of the phase space to gain insights into the attractors
 
-- Extend the study to other tropical monsoon systems.
+- <green>Extend</green> the study to other tropical monsoon systems.
 
 # Any <red>Questions</red>? {.smaller}
 
 # References
 
-# Appendix
 
 ```{ojs}
 //| echo: false
+//| output: false
 delayTS = function (ts, delay = 1, dim = 2) {
   return ts.map((d, i) => {
     const out = [];
